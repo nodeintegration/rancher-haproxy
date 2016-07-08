@@ -2,7 +2,7 @@
 set -e
 
 
-if [ "$1" = 'haproxy' ]; then
+if [ "$1" == 'haproxy' ]; then
   if [ -z "${SYSLOG_HOST}" ]; then
       export SYSLOG_HOST='127.0.0.1'
   fi
