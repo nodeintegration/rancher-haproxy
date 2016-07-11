@@ -4,7 +4,7 @@ set -e
 
 if [ "$1" == 'haproxy' ]; then
   if [ -z "${SYSLOG_HOST}" ]; then
-      export SYSLOG_HOST='127.0.0.1'
+      export SYSLOG_HOST=$(curl 'http://rancher-metadata/2015-07-25/self/host/agent_ip')
   fi
   if [ -z "${SYSLOG_FACILITY}" ]; then
       export SYSLOG_FACILITY='daemon'
