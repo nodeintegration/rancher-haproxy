@@ -48,3 +48,16 @@ The value of the label is the port that haproxy will balance to
 * The entrypoint script then starts haproxy after a few seconds of grace time as a background process
 * The last step is looping inotify watching the 2 final destination files...if those files attributes change in anyway it reloads the haproxy daemon
 
+## I want a different haproxy config, or i want to add more
+The default haproxy.cfg contains very little (a frontend that does a domain map and a fallback backend with nothing in it)
+You can easily add your own config by localising haproxy.cfg and adding your own additional config to it, so long as you have that domain map in your haproxy.cfg and the default fallback backend you shouldnt break any of the other logic...patches are always welcome to extend functionality
+
+# How does this differ from standard haproxy docker images?
+* Added syslog support from environment variables...ie set SYSLOG_HOST and SYSLOG_FACILITY to your docker-compose.yml to get logging!
+* Instead of executing haproxy in the foreground i background it and use inotify to trigger config tests and reloads
+
+# TODO
+* in short plenty
+* add ssl support pulling config from ranchers metadata (ie the same way ranchers lb's work)
+* add support for http -> https redirection
+
