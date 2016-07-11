@@ -51,7 +51,7 @@ def update_config(config_type, data, output_file):
       for backend in sorted(data):
         f.write('\nbackend {}\n  mode http\n'.format(backend))
         for uuid in sorted(data[backend]):
-          f.write('  server {} {}:80\n'.format(uuid, data[backend][uuid]))
+          f.write('  server {} {}:{}\n'.format(uuid, data[backend][uuid]['ip'], data[backend][uuid]['port']))
     elif config_type == 'domainmaps':
       for domain in sorted(data):
         f.write('{} {}\n'.format(domain, data[domain]))
@@ -75,13 +75,14 @@ def generate_config(label, containers):
       primary_ip   = container[u'primary_ip']
       state        = container[u'state']
       uuid         = container[u'uuid']
+      port         = container[u'labels'][unicode(label)]
       fqdn = '{}.{}'.format(stack_name, args.domain)
       service_id = '{}-{}'.format(service_name, uuid)
       domainmaps[fqdn] = stack_name
       try:
-        backends[stack_name][service_id] = primary_ip
+        backends[stack_name][service_id] = {'ip': primary_ip, 'port': port }
       except KeyError:
-        backends[stack_name] = { service_id: primary_ip }
+        backends[stack_name] = { service_id: { 'ip': primary_ip, 'port': port } }
 
   return (backends, domainmaps)
 
