@@ -68,18 +68,20 @@ def generate_config(containers):
   domainmaps = {}
   for container in containers:
     if u'map-public-http' in container[u'labels']:
+      #pp = pprint.PrettyPrinter(indent=4) 
+      #pp.pprint(container)
       stack_name   = container[u'stack_name']
       service_name = container[u'service_name']
       primary_ip   = container[u'primary_ip']
       state        = container[u'state']
       uuid         = container[u'uuid']
-
       fqdn = '{}.{}'.format(stack_name, args.domain)
+      service_id = '{}-{}'.format(service_name, uuid)
       domainmaps[fqdn] = stack_name
       try:
-        backends[stack_name][primary_ip] = service_name
+        backends[stack_name][service_id] = primary_ip
       except KeyError:
-        backends[stack_name] = { uuid: primary_ip }
+        backends[stack_name] = { service_id: primary_ip }
 
   return (backends, domainmaps)
 
