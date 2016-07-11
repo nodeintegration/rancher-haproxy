@@ -42,7 +42,7 @@ RUN set -x \
 	&& apk del .build-deps
 
 # Customisation from haproxy upstream
-RUN apk add --no-cache inotify-tools python py-pip && \
+RUN apk add --no-cache inotify-tools curl python py-pip && \
     pip install requests
 
 ENV HAPROXY_CONFIG /usr/local/etc/haproxy/haproxy.cfg
