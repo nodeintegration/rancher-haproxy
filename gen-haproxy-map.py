@@ -68,8 +68,6 @@ def generate_config(label, containers):
   domainmaps = {}
   for container in containers:
     if unicode(label) in container[u'labels']:
-      #pp = pprint.PrettyPrinter(indent=4) 
-      #pp.pprint(container)
       stack_name   = container[u'stack_name']
       service_name = container[u'service_name']
       primary_ip   = container[u'primary_ip']
