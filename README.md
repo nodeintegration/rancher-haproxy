@@ -14,7 +14,7 @@ docker-compose.yml:
 ```
 HTTP:
   ports:
-  - 80:80
+  - 80:80/tcp
   environment:
     STACK_DOMAIN: '$MyDomainWithWildcardRecord'
     RANCHER_LABEL: 'IWantMyContainersThatHaveThisLabelToBeDiscovered'
