@@ -26,7 +26,7 @@ if [ "$1" == 'haproxy' ]; then
   python /gen-haproxy-map.py --label "${RANCHER_LABEL}" --domain "${STACK_DOMAIN}" &
 
   sleep 5
-  echo "[DEBUG]: contents:"
+  echo "[DEBUG]: ${HAPROXY_BACKEND_CONFIG} contents:"
   cat ${HAPROXY_BACKEND_CONFIG}
   # Check the config
   ${HAPROXY_CONFIG_CHECK}
