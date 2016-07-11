@@ -12,6 +12,8 @@ if [ "$1" == 'haproxy' ]; then
   
   sed -i -e "s/#SYSLOG_HOST#/${SYSLOG_HOST}/g" $HAPROXY_CONFIG
   sed -i -e "s/#SYSLOG_FACILITY#/${SYSLOG_FACILITY}/g" $HAPROXY_CONFIG
+
+  echo "[INFO]: haproxy configured to send logs to host: ${SYSLOG_HOST}, facility: ${SYSLOG_FACILITY}"
   
   touch ${HAPROXY_DOMAIN_MAP}
   touch ${HAPROXY_BACKEND_CONFIG}
