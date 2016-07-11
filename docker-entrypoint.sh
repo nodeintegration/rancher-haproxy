@@ -23,7 +23,7 @@ if [ "$1" == 'haproxy' ]; then
   
   # Start the metadata service config generator
   echo "[INFO]: starting rancher metadata service config generator"
-  python /gen-haproxy-map.py --domain "${STACK_DOMAIN}" &
+  python /gen-haproxy-map.py --label "${RANCHER_LABEL}" --domain "${STACK_DOMAIN}" &
 
   sleep 5
   echo "[DEBUG]: contents:"

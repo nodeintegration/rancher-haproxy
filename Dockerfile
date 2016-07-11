@@ -41,12 +41,14 @@ RUN set -x \
 	&& apk add --virtual .haproxy-rundeps $runDeps \
 	&& apk del .build-deps
 
+# Customisation from haproxy upstream
 RUN apk add --no-cache inotify-tools python py-pip && \
     pip install requests
 
 ENV HAPROXY_CONFIG /usr/local/etc/haproxy/haproxy.cfg
 ENV HAPROXY_BACKEND_CONFIG /usr/local/etc/haproxy/haproxy-backends.cfg
 ENV HAPROXY_DOMAIN_MAP /usr/local/etc/haproxy/domain.map
+ENV RANCHER_LABEL map-public-http
 
 COPY gen-haproxy-map.py /
 COPY docker-entrypoint.sh /
