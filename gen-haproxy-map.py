@@ -13,7 +13,7 @@ def main(args):
   while True:
     containers = get_containers(apiurl)
     if containers:
-      (backends, domainmaps) = generate_config(containers)
+      (backends, domainmaps) = generate_config(args.label, containers)
       update_config('backends', backends, args.backends)
       update_config('domainmaps', domainmaps, args.domainmap)
 
@@ -63,11 +63,11 @@ def update_config(config_type, data, output_file):
   else:
     os.rename(tmpfile, output_file)
 
-def generate_config(containers):
+def generate_config(label, containers):
   backends   = {}
   domainmaps = {}
   for container in containers:
-    if u'map-public-http' in container[u'labels']:
+    if unicode(label) in container[u'labels']:
       #pp = pprint.PrettyPrinter(indent=4) 
       #pp.pprint(container)
       stack_name   = container[u'stack_name']
@@ -92,6 +92,7 @@ if __name__ == "__main__":
   parser.add_argument('--apihost',    default='rancher-metadata.rancher.internal',           help='Rancher Metadata API host.')
   parser.add_argument('--domainmap',  default='/usr/local/etc/haproxy/domain.map',           help='Where to store the haproxy map file.')
   parser.add_argument('--backends',   default='/usr/local/etc/haproxy/haproxy-backends.cfg', help='Where to store the haproxy backends file.')
+  parser.add_argument('--label',      default='map-public-http',                             help='What rancher label to use to find containers.')
   parser.add_argument('--interval',   default=10, type=int,                                  help='How often to generate the config.')
   args = parser.parse_args()
 
