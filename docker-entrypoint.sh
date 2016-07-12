@@ -24,7 +24,9 @@ if [ "$1" == 'haproxy' ]; then
     echo "[INFO]: getting ssl key from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key"
     curl -s http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key >> ${HAPROXY_SSL_CERT}
 
+     echo "[INFO]: enabling ssl"
     sed -i -e "s/#ENABLE_SSL#//g" $HAPROXY_CONFIG
+     echo "[INFO]: substituting ssl certificate"
     sed -i -e "s/#SSL_CERT#/${HAPROXY_SSL_CERT}/g" $HAPROXY_CONFIG
   fi
 
