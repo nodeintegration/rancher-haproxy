@@ -48,6 +48,8 @@ RUN apk add --no-cache inotify-tools curl python py-pip && \
 ENV HAPROXY_CONFIG /usr/local/etc/haproxy/haproxy.cfg
 ENV HAPROXY_BACKEND_CONFIG /usr/local/etc/haproxy/haproxy-backends.cfg
 ENV HAPROXY_DOMAIN_MAP /usr/local/etc/haproxy/domain.map
+ENV RANCHER_API_HOST rancher-metadata.rancher.internal
+ENV RANCHER_API_VERSION 2015-12-19
 ENV RANCHER_LABEL map-public-http
 
 COPY gen-haproxy-map.py /

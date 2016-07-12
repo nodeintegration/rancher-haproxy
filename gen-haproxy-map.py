@@ -86,13 +86,13 @@ def generate_config(label, containers):
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description='Generate haproxy config and maps from Rancher Metadata Service.')
-  parser.add_argument('--domain',     required=True,                                         help='Domain suffix to use for host routing eg: $stack_name.$domain.')
-  parser.add_argument('--apiversion', default='2015-12-19',                                  help='Rancher Metadata API version.')
-  parser.add_argument('--apihost',    default='rancher-metadata.rancher.internal',           help='Rancher Metadata API host.')
-  parser.add_argument('--domainmap',  default='/usr/local/etc/haproxy/domain.map',           help='Where to store the haproxy map file.')
-  parser.add_argument('--backends',   default='/usr/local/etc/haproxy/haproxy-backends.cfg', help='Where to store the haproxy backends file.')
-  parser.add_argument('--label',      default='map-public-http',                             help='What rancher label to use to find containers.')
-  parser.add_argument('--interval',   default=10, type=int,                                  help='How often to generate the config.')
+  parser.add_argument('--domain',     required=True,        help='Domain suffix to use for host routing eg: $stack_name.$domain.')
+  parser.add_argument('--apiversion', required=True,        help='Rancher Metadata API version.')
+  parser.add_argument('--apihost',    required=True,        help='Rancher Metadata API host.')
+  parser.add_argument('--domainmap',  required=True,        help='Where to store the haproxy map file.')
+  parser.add_argument('--backends',   required=True,        help='Where to store the haproxy backends file.')
+  parser.add_argument('--label',      required=True,        help='What rancher label to use to find containers.')
+  parser.add_argument('--interval',   default=10, type=int, help='How often to generate the config.')
   args = parser.parse_args()
 
   main(args)

@@ -4,7 +4,7 @@ set -e
 
 if [ "$1" == 'haproxy' ]; then
   if [ -z "${SYSLOG_HOST}" ]; then
-      export SYSLOG_HOST=$(curl 'http://rancher-metadata.rancher.internal/2015-07-25/self/host/agent_ip')
+      export SYSLOG_HOST=$(curl "http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/host/agent_ip")
   fi
   if [ -z "${SYSLOG_FACILITY}" ]; then
       export SYSLOG_FACILITY='daemon'
@@ -14,6 +14,9 @@ if [ "$1" == 'haproxy' ]; then
   sed -i -e "s/#SYSLOG_FACILITY#/${SYSLOG_FACILITY}/g" $HAPROXY_CONFIG
 
   echo "[INFO]: haproxy configured to send logs to host: ${SYSLOG_HOST}, facility: ${SYSLOG_FACILITY}"
+
+  echo "[INFO]: getting ssl certificate from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_cert"
+  echo "[INFO]: getting ssl key from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key"
   
   touch ${HAPROXY_DOMAIN_MAP}
   touch ${HAPROXY_BACKEND_CONFIG}
@@ -25,8 +28,9 @@ if [ "$1" == 'haproxy' ]; then
   
   # Start the metadata service config generator
   echo "[INFO]: starting rancher metadata service config generator"
-  python /gen-haproxy-map.py --label "${RANCHER_LABEL}" --domain "${STACK_DOMAIN}" &
+  python /gen-haproxy-map.py --apihost "${RANCHER_API_HOST}" --apiversion "${RANCHER_API_VERSION}" --label "${RANCHER_LABEL}" --domain "${STACK_DOMAIN}" --domainmap "${HAPROXY_DOMAIN_MAP}" --backends "${HAPROXY_BACKEND_CONFIG}" &
 
+  # Give it a few seconds to generate the host otherwise it will respin and try again
   sleep 5
   echo "[DEBUG]: ${HAPROXY_BACKEND_CONFIG} contents:"
   cat ${HAPROXY_BACKEND_CONFIG}
