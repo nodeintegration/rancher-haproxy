@@ -47,7 +47,6 @@ RUN apk add --no-cache inotify-tools curl python py-pip && \
 
 ENV HAPROXY_CONFIG /usr/local/etc/haproxy/haproxy.cfg
 ENV HAPROXY_SSL_CERT /usr/local/etc/haproxy/server.pem
-ENV HAPROXY_SSL_KEY /usr/local/etc/haproxy/server.key
 ENV HAPROXY_BACKEND_CONFIG /usr/local/etc/haproxy/haproxy-backends.cfg
 ENV HAPROXY_DOMAIN_MAP /usr/local/etc/haproxy/domain.map
 ENV RANCHER_API_HOST rancher-metadata.rancher.internal
