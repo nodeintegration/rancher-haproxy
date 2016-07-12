@@ -13,15 +13,19 @@ if [ "$1" == 'haproxy' ]; then
   sed -i -e "s/#SYSLOG_HOST#/${SYSLOG_HOST}/g" $HAPROXY_CONFIG
   sed -i -e "s/#SYSLOG_FACILITY#/${SYSLOG_FACILITY}/g" $HAPROXY_CONFIG
 
-  echo "[INFO]: haproxy configured to send logs to host: ${SYSLOG_HOST}, facility: ${SYSLOG_FACILITY}"
+  if [ -n "${ENABLE_SSL}" ]; then
+    echo "[INFO]: haproxy configured to send logs to host: ${SYSLOG_HOST}, facility: ${SYSLOG_FACILITY}"
 
-  echo "[INFO]: getting ssl certificate from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_cert"
-  curl -s http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_cert > ${HAPROXY_SSL_CERT}
+    echo "[INFO]: getting ssl certificate from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_cert"
+    curl -s http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_cert > ${HAPROXY_SSL_CERT}
 
-  echo "[INFO]: getting ssl key from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key"
-  curl -s http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key >> ${HAPROXY_SSL_CERT}
+    echo "[INFO]: getting ssl key from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key"
+    curl -s http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key >> ${HAPROXY_SSL_CERT}
 
-  sed -i -e "s/#SSL_CERT#/${HAPROXY_SSL_CERT}/g" $HAPROXY_CONFIG
+    sed -i -e "s/#ENABLE_SSL#//g" $HAPROXY_CONFIG
+    sed -i -e "s/#SSL_CERT#/${HAPROXY_SSL_CERT}/g" $HAPROXY_CONFIG
+  fi
+  
 
   touch ${HAPROXY_DOMAIN_MAP}
   touch ${HAPROXY_BACKEND_CONFIG}
