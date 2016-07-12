@@ -16,8 +16,14 @@ if [ "$1" == 'haproxy' ]; then
   echo "[INFO]: haproxy configured to send logs to host: ${SYSLOG_HOST}, facility: ${SYSLOG_FACILITY}"
 
   echo "[INFO]: getting ssl certificate from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_cert"
+  curl -o ${HAPROXY_SSL_CERT} http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_cert
+  echo "[DEBUG]: "
+  cat ${HAPROXY_SSL_CERT}
+
   echo "[INFO]: getting ssl key from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key"
+  curl -o ${HAPROXY_SSL_KEY} http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key
   
+
   touch ${HAPROXY_DOMAIN_MAP}
   touch ${HAPROXY_BACKEND_CONFIG}
   
