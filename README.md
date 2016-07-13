@@ -9,6 +9,18 @@ This will give you an immediate endpoint http://app-r123.$domain'
 The label to associate and the domain are configurable
 ## How to use this container
 
+### ENVIRONMENT Flags
+* ENABLE_SSL - Enables ssl offloading
+* SSL_BASE64_ENCODED - When supplying certificate/key in metadata, this flag will assume you have base64 encoded them, this is handy if you want to use compose variables for certificates
+* HAPROXY_CONFIG - The default haproxy.cfg location
+* HAPROXY_SSL_CERT - Where the ssl certificate file is used (the certificate/key is combined to this), if you want to volume mount your certificate, mount it to this location
+* HAPROXY_BACKEND_CONFIG - Where the dynamic generated backend config is stored
+* HAPROXY_DOMAIN_MAP - Where the dynamic domain map generated config is stored
+* RANCHER_API_HOST - The rancher metadata service api host
+* RANCHER_API_VERSION - The rancher api version to use
+* RANCHER_LABEL - The label for to filter by for services to include in the routing
+
+
 Create a stack for your load balancer
 docker-compose.yml:
 ```
