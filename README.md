@@ -10,7 +10,7 @@ The label to associate and the domain are configurable
 ## How to use this container
 
 ### ENVIRONMENT Flags
-* ENABLE_SSL - Enables ssl offloading
+* ENABLE_SSL - Enables ssl offloading, only set this to true if you have your ssl cert/key configured as per below
 * SSL_BASE64_ENCODED - When supplying certificate/key in metadata, this flag will assume you have base64 encoded them, this is handy if you want to use compose variables for certificates
 * HAPROXY_CONFIG - The default haproxy.cfg location
 * HAPROXY_SSL_CERT - Where the ssl certificate file is used (the certificate/key is combined to this), if you want to volume mount your certificate, mount it to this location
@@ -29,7 +29,6 @@ HTTP:
   - 443:443/tcp
   - 80:80/tcp
   environment:
-    ENABLE_SSL: 'true'
     STACK_DOMAIN: '$MyDomainWithWildcardRecord'
     RANCHER_LABEL: 'IWantMyContainersThatHaveThisLabelToBeDiscovered'
   labels:
@@ -53,7 +52,9 @@ nginx:
 The value of the label is the port that haproxy will balance to
 ### What options do i have for ssl certificates?
 
-Theres a few ways:
+Add the environment flag: ENABLE_SSL: 'true'
+
+Theres a few ways to supply your certificate and key:
 * mount a combined cert and key to $HAPROXY_SSL_CERT
 * supply the cert and key through metadata
 * supply the cert and key through metadata base64 encoded
@@ -98,5 +99,6 @@ Since this is image is essentially a normal container we dont have this luxury. 
 # TODO
 * in short plenty
 * add support for http -> https redirection
+* add stats exposing
 
 
