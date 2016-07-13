@@ -20,7 +20,7 @@ The label to associate and the domain are configurable
 * RANCHER_API_VERSION - The rancher api version to use
 * RANCHER_LABEL - The label for to filter by for services to include in the routing
 
-
+### Examples
 Create a stack for your load balancer
 docker-compose.yml:
 ```
@@ -38,18 +38,6 @@ HTTP:
   image: nodeintegration/rancher-haproxy
   stdin_open: true
 ```
-# rancher-compose.yml only needed when enabling ssl
-rancher-compose.yml: 
-```
-HTTP-Custom:
-  metadata:
-    ssl_cert: |
-      -----BEGIN CERTIFICATE-----
-      XXX
-    ssl_key: | 
-      -----BEGIN RSA PRIVATE KEY-----
-      XXX
-```
 Then create your web applications with the same label you used above ie "RANCHER_LABEL".
 e.g. a stack called "test-webservice-r123"
 docker-compose.yml:
@@ -63,6 +51,26 @@ nginx:
   stdin_open: true
 ```
 The value of the label is the port that haproxy will balance to
+### What options do i have for ssl certificates?
+
+Theres a few ways:
+* mount a combined cert and key to $HAPROXY_SSL_CERT
+* supply the cert and key through metadata
+* supply the cert and key through metadata base64 encoded
+
+rancher-compose.yml: 
+You can use a raw certificate multiline string or you can just base64 encode the cert to a single line string to easily preserve formatting:
+cat somecert.crt | base64 -w 0 > somecert.crt.base64
+```
+HTTP-Custom:
+  metadata:
+    ssl_cert: |
+      -----BEGIN CERTIFICATE-----
+      XXX
+    ssl_key: | 
+      -----BEGIN RSA PRIVATE KEY-----
+      XXX
+```
 
 ## How does this work?
 * Since haproxy can use dynamic maps for host header mappings to backends we use that for $stack_name.$domain -> $stack_name....we cant however dynamically create haproxy backends without reloading haproxy.
@@ -90,6 +98,5 @@ Since this is image is essentially a normal container we dont have this luxury. 
 # TODO
 * in short plenty
 * add support for http -> https redirection
-* add more methods of allowing ssl certs (ie bind mounts)
 
 
