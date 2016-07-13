@@ -18,11 +18,15 @@ if [ "$1" == 'haproxy' ]; then
   if [ "${ENABLE_SSL}" != 'false' ]; then
     echo "[INFO]: ssl enabled...configuring"
 
-    echo "[INFO]: getting ssl certificate from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_cert"
-    curl -sS http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_cert > ${HAPROXY_SSL_CERT}
+    if [ -f ${HAPROXY_SSL_CERT} ]; then
+      echo "[INFO]: certificate: ${HAPROXY_SSL_CERT} already exists, skip fetching."
+    else
+      echo "[INFO]: getting ssl certificate from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_cert"
+      curl -sS http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_cert > ${HAPROXY_SSL_CERT}
 
-    echo "[INFO]: getting ssl key from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key"
-    curl -sS http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key >> ${HAPROXY_SSL_CERT}
+      echo "[INFO]: getting ssl key from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key"
+      curl -sS http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_key >> ${HAPROXY_SSL_CERT}
+    fi
 
     echo "[INFO]: enabling ssl"
     sed -i -e "s/#ENABLE_SSL#//g" $HAPROXY_CONFIG
