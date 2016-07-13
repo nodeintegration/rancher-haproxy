@@ -14,8 +14,10 @@ docker-compose.yml:
 ```
 HTTP:
   ports:
+  - 443:443/tcp
   - 80:80/tcp
   environment:
+    ENABLE_SSL: 'true'
     STACK_DOMAIN: '$MyDomainWithWildcardRecord'
     RANCHER_LABEL: 'IWantMyContainersThatHaveThisLabelToBeDiscovered'
   labels:
@@ -23,6 +25,18 @@ HTTP:
   tty: true
   image: nodeintegration/rancher-haproxy
   stdin_open: true
+```
+# rancher-compose.yml only needed when enabling ssl
+rancher-compose.yml: 
+```
+HTTP-Custom:
+  metadata:
+    ssl_cert: |
+      -----BEGIN CERTIFICATE-----
+      XXX
+    ssl_key: | 
+      -----BEGIN RSA PRIVATE KEY-----
+      XXX
 ```
 Then create your web applications with the same label you used above ie "RANCHER_LABEL".
 e.g. a stack called "test-webservice-r123"
@@ -52,12 +66,18 @@ The value of the label is the port that haproxy will balance to
 The default haproxy.cfg contains very little (a frontend that does a domain map and a fallback backend with nothing in it)
 You can easily add your own config by localising haproxy.cfg and adding your own additional config to it, so long as you have that domain map in your haproxy.cfg and the default fallback backend you shouldnt break any of the other logic...patches are always welcome to extend functionality
 
+## Rancher SSL Certificate store support
+Currently the certificate store is a one way action, ie you cannot retrieve the key from the api or the metadata service for some obvious reasons.
+The rancher lb service is a special case in which it makes a call to the api for configscripts, the rancher server prepares a payload for this special type of container which preps the certificate.
+Since this is image is essentially a normal container we dont have this luxury. So i've added handling adding ssl cert/key via metadata.
+
 # How does this differ from standard haproxy docker images?
 * Added syslog support from environment variables...ie set SYSLOG_HOST and SYSLOG_FACILITY to your docker-compose.yml to get logging!
 * Instead of executing haproxy in the foreground i background it and use inotify to trigger config tests and reloads
 
 # TODO
 * in short plenty
-* add ssl support pulling config from ranchers metadata (ie the same way ranchers lb's work)
 * add support for http -> https redirection
+* add more methods of allowing ssl certs (ie bind mounts)
+
 
