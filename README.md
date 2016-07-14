@@ -10,6 +10,7 @@ The label to associate and the domain are configurable
 ## How to use this container
 
 ### ENVIRONMENT Flags
+* STACK_DOMAIN - The domain to append to the stack names ie. if your stack was: stack123 and the STACK_DOMAIN was 'dev.tld' you would be able to access the stack via: stack123.dev.tld
 * ENABLE_SSL - Enables ssl offloading, only set this to true if you have your ssl cert/key configured as per below
 * SSL_BASE64_ENCODED - When supplying certificate/key in metadata, this flag will assume you have base64 encoded them, this is handy if you want to use compose variables for certificates
 * HAPROXY_CONFIG - The default haproxy.cfg location
