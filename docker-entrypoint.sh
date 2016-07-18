@@ -3,6 +3,10 @@ set -e
 
 
 if [ "$1" == 'haproxy' ]; then
+  if [ "${STACK_DOMAIN}" == "none" ]; then
+      echo "[ERROR]: STACK_DOMAIN MUST be defined..."
+      exit 1
+  fi
   if [ -z "${SYSLOG_HOST}" ]; then
       export SYSLOG_HOST=$(curl -sS "http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/host/agent_ip")
   fi

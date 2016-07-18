@@ -45,7 +45,7 @@ RUN set -x \
 RUN apk add --no-cache inotify-tools curl python py-pip && \
     pip install requests
 
-ENV STACK_DOMAIN
+ENV STACK_DOMAIN none
 ENV ENABLE_SSL false
 ENV SSL_BASE64_ENCODED false
 ENV HAPROXY_CONFIG /usr/local/etc/haproxy/haproxy.cfg
