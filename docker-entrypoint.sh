@@ -7,18 +7,21 @@ if [ "$1" == 'haproxy' ]; then
       echo "[ERROR]: STACK_DOMAIN MUST be defined..."
       exit 1
   fi
+
+
+  # Configure haproxy logging
   if [ -z "${SYSLOG_HOST}" ]; then
       export SYSLOG_HOST=$(curl -sS "http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/host/agent_ip")
   fi
   if [ -z "${SYSLOG_FACILITY}" ]; then
       export SYSLOG_FACILITY='daemon'
   fi
-  
   echo "[INFO]: setting SYSLOG_HOST to: ${SYSLOG_HOST}"
   echo "[INFO]: setting SYSLOG_FACILITY to: ${SYSLOG_FACILITY}"
   sed -i -e "s/#SYSLOG_HOST#/${SYSLOG_HOST}/g" $HAPROXY_CONFIG
   sed -i -e "s/#SYSLOG_FACILITY#/${SYSLOG_FACILITY}/g" $HAPROXY_CONFIG
 
+  # Enable ssl if wanted
   if [ "${ENABLE_SSL}" != 'false' ]; then
     echo "[INFO]: ssl enabled...configuring"
 
@@ -46,6 +49,16 @@ if [ "$1" == 'haproxy' ]; then
     sed -i -e "s%#SSL_CERT#%${HAPROXY_SSL_CERT}%g" $HAPROXY_CONFIG
   fi
 
+  # Enable haproxy stats if wanted
+  if [ "${ENABLE_STATS}" != "false" ]; then
+    echo "[INFO]: enabling haproxy stats on port: ${STATS_PORT}"
+    sed -i -e "s/#ENABLE_STATS#//g" $HAPROXY_CONFIG
+    sed -i -e "s/#STATS_PORT#/${STATS_PORT}/g" $HAPROXY_CONFIG
+    sed -i -e "s/#STATS_USERNAME#/${STATS_USERNAME}/g" $HAPROXY_CONFIG
+    sed -i -e "s/#STATS_PASSWORD#/${STATS_PASSWORD}/g" $HAPROXY_CONFIG
+  fi
+
+  # Make sure initial dynamic files exist.
   touch ${HAPROXY_DOMAIN_MAP}
   touch ${HAPROXY_BACKEND_CONFIG}
   

@@ -46,6 +46,10 @@ RUN apk add --no-cache inotify-tools curl python py-pip && \
     pip install requests
 
 ENV STACK_DOMAIN none
+ENV ENABLE_STATS false
+ENV STATS_PORT 1936
+ENV STATS_USERNAME haproxy
+ENV STATS_PASSWORD haproxy
 ENV ENABLE_SSL false
 ENV SSL_BASE64_ENCODED false
 ENV HAPROXY_CONFIG /usr/local/etc/haproxy/haproxy.cfg
