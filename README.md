@@ -13,6 +13,10 @@ The label to associate and the domain are configurable
 * STACK_DOMAIN - The domain to append to the stack names ie. if your stack was: stack123 and the STACK_DOMAIN was 'dev.tld' you would be able to access the stack via: stack123.dev.tld
 * ENABLE_SSL - Enables ssl offloading, only set this to true if you have your ssl cert/key configured as per below
 * SSL_BASE64_ENCODED - When supplying certificate/key in metadata, this flag will assume you have base64 encoded them, this is handy if you want to use compose variables for certificates
+* ENABLE_STATS - Tells haproxy to expose the stats http interface, listens on STATS_PORT with STATS_USERNAME and STATS_PASSWORD, defaults to false
+* STATS_PORT - Tells haproxy what port to use for stats, defaults to 1936
+* STATS_USERNAME - haproxy stats username, defaults to haproxy
+* STATS_PASSWORD - haproxy stats password, defaults to haproxy
 * HAPROXY_CONFIG - The default haproxy.cfg location
 * HAPROXY_SSL_CERT - Where the ssl certificate file is used (the certificate/key is combined to this), if you want to volume mount your certificate, mount it to this location
 * HAPROXY_BACKEND_CONFIG - Where the dynamic generated backend config is stored
@@ -20,6 +24,7 @@ The label to associate and the domain are configurable
 * RANCHER_API_HOST - The rancher metadata service api host
 * RANCHER_API_VERSION - The rancher api version to use
 * RANCHER_LABEL - The label for to filter by for services to include in the routing
+* DISABLE_METADATA - This disables the fetching of data from metadata, more for debug use if you want to run it locally outside of rancher for testing
 
 ### Examples
 Create a stack for your load balancer
@@ -100,6 +105,5 @@ Since this is image is essentially a normal container we dont have this luxury. 
 # TODO
 * in short plenty
 * add support for http -> https redirection
-* add stats exposing
 
 
