@@ -52,6 +52,7 @@ ENV STATS_USERNAME haproxy
 ENV STATS_PASSWORD haproxy
 ENV ENABLE_SSL false
 ENV SSL_BASE64_ENCODED false
+ENV DISABLE_METADATA false
 ENV HAPROXY_CONFIG /usr/local/etc/haproxy/haproxy.cfg
 ENV HAPROXY_SSL_CERT /usr/local/etc/haproxy/server.pem
 ENV HAPROXY_BACKEND_CONFIG /usr/local/etc/haproxy/haproxy-backends.cfg
