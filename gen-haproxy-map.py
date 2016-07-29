@@ -12,8 +12,9 @@ def main(args):
   apiurl = 'http://{}/{}'.format(args.apihost, args.apiversion)
   while True:
     containers = get_containers(apiurl)
+    aliases = get_aliases(apiurl)
     if containers:
-      (backends, domainmaps) = generate_config(args.label, containers)
+      (backends, domainmaps) = generate_config(args.label, containers, aliases)
       update_config('backends', backends, args.backends)
       update_config('domainmaps', domainmaps, args.domainmap)
 
@@ -26,6 +27,15 @@ def get_containers(apiurl):
     return r.json()
   else:
     print "[ERROR]: status_code: {} getting containers".format(r.status_code)
+    return None
+
+def get_aliases(apiurl):
+  url = '{}/{}'.format(apiurl,'self/service/metadata/aliases'
+  r = requests.get(url, headers = {"Content-Type": "application/json", "Accept": "application/json"})
+  if r.status_code == requests.codes.ok:
+    return r.json()
+  else:
+    print "[ERROR]: status_code: {} getting aliases".format(r.status_code)
     return None
 
 def hashfile(afile, hasher, blocksize=65536):
@@ -63,7 +73,7 @@ def update_config(config_type, data, output_file):
   else:
     os.rename(tmpfile, output_file)
 
-def generate_config(label, containers):
+def generate_config(label, containers, aliases):
   backends   = {}
   domainmaps = {}
   for container in containers:
@@ -74,9 +84,16 @@ def generate_config(label, containers):
       state        = container[u'state']
       uuid         = container[u'uuid']
       port         = container[u'labels'][unicode(label)]
-      fqdn = '{}.{}'.format(stack_name, args.domain)
-      service_id = '{}-{}'.format(service_name, uuid)
+      fqdn         = '{}.{}'.format(stack_name, args.domain)
+      service_id   = '{}-{}'.format(service_name, uuid)
+
+      # Add stack name domain map
       domainmaps[fqdn] = stack_name
+      # Add aliases domain map if required
+      if stack_name in aliases:
+        for alias in aliases[stack_name]:
+          fqdn = '{}.{}'.format(alias, args.domain)
+          domainmaps[fqdn] = stack_name
       try:
         backends[stack_name][service_id] = {'ip': primary_ip, 'port': port }
       except KeyError:
