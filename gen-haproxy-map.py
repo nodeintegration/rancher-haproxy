@@ -30,7 +30,7 @@ def get_containers(apiurl):
     return None
 
 def get_aliases(apiurl):
-  url = '{}/{}'.format(apiurl,'self/service/metadata/aliases'
+  url = '{}/{}'.format(apiurl,'self/service/metadata/aliases')
   r = requests.get(url, headers = {"Content-Type": "application/json", "Accept": "application/json"})
   if r.status_code == requests.codes.ok:
     return r.json()

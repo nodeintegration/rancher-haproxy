@@ -69,7 +69,7 @@ rancher-compose.yml:
 You can use a raw certificate multiline string or you can just base64 encode the cert to a single line string to easily preserve formatting:
 cat somecert.crt | base64 -w 0 > somecert.crt.base64
 ```
-HTTP-Custom:
+HTTP:
   metadata:
     ssl_cert: |
       -----BEGIN CERTIFICATE-----
@@ -89,6 +89,17 @@ HTTP-Custom:
 * The entrypoint script then starts haproxy after a few seconds of grace time as a background process
 * The last step is looping inotify watching the 2 final destination files...if those files attributes change in anyway it reloads the haproxy daemon
 
+## I want aliases to my stacks!
+For example you may want additional aliases...say www.$tld to hit app1 stack
+Simply add in the rancher-compose metadata:
+
+HTTP:
+  metadata:
+    aliases:
+      app1:
+        - www
+        - someotheralias
+
 ## I want a different haproxy config, or i want to add more
 The default haproxy.cfg contains very little (a frontend that does a domain map and a fallback backend with nothing in it)
 You can easily add your own config by localising haproxy.cfg and adding your own additional config to it, so long as you have that domain map in your haproxy.cfg and the default fallback backend you shouldnt break any of the other logic...patches are always welcome to extend functionality
@@ -105,5 +116,3 @@ Since this is image is essentially a normal container we dont have this luxury. 
 # TODO
 * in short plenty
 * add support for http -> https redirection
-
-
