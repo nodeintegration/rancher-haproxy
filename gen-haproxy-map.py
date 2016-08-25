@@ -87,6 +87,10 @@ def generate_config(label, containers, aliases):
       fqdn         = '{}.{}'.format(stack_name, args.domain)
       service_id   = '{}-{}'.format(service_name, uuid)
 
+      if not primary_ip:
+        print "[WARNING]: stack_name: {} container_uuid: {} does not yet have an ip address, skipping this container".format(stack_name, uuid)
+        continue
+
       # Add stack name domain map
       domainmaps[fqdn] = stack_name
       # Add aliases domain map if required
