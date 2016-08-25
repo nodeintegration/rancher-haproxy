@@ -1,6 +1,4 @@
 #!/bin/sh
-set -e
-
 
 if [ "$1" == 'haproxy' ]; then
   if [ "${STACK_DOMAIN}" == "none" ]; then
@@ -87,7 +85,9 @@ if [ "$1" == 'haproxy' ]; then
     echo "[INFO]: haproxy started with ${HAPROXY_CONFIG} and ${HAPROXY_BACKEND_CONFIG}"
   else
     echo "[ERROR]: haproxy failed to start"
-    echo "[DEBUG]: ${HAPROXY_BACKEND_CONFIG} contents:"
+    echo "[ERROR]: ${HAPROXY_DOMAIN_MAP} contents:"
+    cat ${HAPROXY_DOMAIN_MAP}
+    echo "[ERROR]: ${HAPROXY_BACKEND_CONFIG} contents:"
     cat ${HAPROXY_BACKEND_CONFIG}
     exit 1
   fi
@@ -96,10 +96,17 @@ if [ "$1" == 'haproxy' ]; then
     if [ -f ${HAPROXY_PID_FILE} ]; then
       echo "[INFO]: restarting haproxy from config changes..."
       ${HAPROXY_CONFIG_CHECK}
-      ${HAPROXY_CMD} -sf $(cat ${HAPROXY_PID_FILE})
-      echo "[DEBUG]: ${HAPROXY_BACKEND_CONFIG} contents:"
-      cat ${HAPROXY_BACKEND_CONFIG}
-      echo "[INFO] haproxy restarted new pid: $(cat ${HAPROXY_PID_FILE})"
+      # Since we want haproxy to continue but we want to know the current config not just the failing line
+      if [ $? != 0 ]; then
+        echo "[ERROR]: haproxy config test failed:"
+    	echo "[ERROR]: ${HAPROXY_DOMAIN_MAP} contents:"
+    	cat ${HAPROXY_DOMAIN_MAP}
+    	echo "[ERROR]: ${HAPROXY_BACKEND_CONFIG} contents:"
+    	cat ${HAPROXY_BACKEND_CONFIG}
+      else
+        ${HAPROXY_CMD} -sf $(cat ${HAPROXY_PID_FILE})
+        echo "[INFO] haproxy restarted new pid: $(cat ${HAPROXY_PID_FILE})"
+      fi
     else
       echo "[ERROR] haproxy pid not found exiting"
       break
