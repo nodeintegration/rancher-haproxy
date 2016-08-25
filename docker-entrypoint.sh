@@ -87,6 +87,9 @@ if [ "$1" == 'haproxy' ]; then
     echo "[INFO]: haproxy started with ${HAPROXY_CONFIG} and ${HAPROXY_BACKEND_CONFIG}"
   else
     echo "[ERROR]: haproxy failed to start"
+    echo "[DEBUG]: ${HAPROXY_BACKEND_CONFIG} contents:"
+    cat ${HAPROXY_BACKEND_CONFIG}
+    exit 1
   fi
   
   while inotifywait -q -e create,delete,modify,attrib ${HAPROXY_CONFIG} ${HAPROXY_BACKEND_CONFIG}; do
@@ -94,6 +97,8 @@ if [ "$1" == 'haproxy' ]; then
       echo "[INFO]: restarting haproxy from config changes..."
       ${HAPROXY_CONFIG_CHECK}
       ${HAPROXY_CMD} -sf $(cat ${HAPROXY_PID_FILE})
+      echo "[DEBUG]: ${HAPROXY_BACKEND_CONFIG} contents:"
+      cat ${HAPROXY_BACKEND_CONFIG}
       echo "[INFO] haproxy restarted new pid: $(cat ${HAPROXY_PID_FILE})"
     else
       echo "[ERROR] haproxy pid not found exiting"
