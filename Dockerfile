@@ -65,6 +65,7 @@ COPY gen-haproxy-map.py /
 COPY docker-entrypoint.sh /
 COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 COPY supervisord.conf /etc/supervisor/
+COPY haproxy-inotify.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
 

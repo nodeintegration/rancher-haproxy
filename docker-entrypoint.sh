@@ -77,6 +77,7 @@ if [ "$1" == '/usr/bin/supervisord' ]; then
   cat ${HAPROXY_BACKEND_CONFIG}
   # Check the config
   ${HAPROXY_CONFIG_CHECK}
+  exec "$@"
 else
   exec "$@"
 fi
