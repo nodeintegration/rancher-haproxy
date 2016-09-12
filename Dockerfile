@@ -42,7 +42,7 @@ RUN set -x \
 	&& apk del .build-deps
 
 # Customisation from haproxy upstream
-RUN apk add --no-cache inotify-tools curl python py-pip && \
+RUN apk add --no-cache supervisor inotify-tools curl python py-pip && \
     pip install requests
 
 ENV STACK_DOMAIN none
@@ -64,5 +64,7 @@ ENV RANCHER_LABEL map-public-http
 COPY gen-haproxy-map.py /
 COPY docker-entrypoint.sh /
 COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+COPY supervisord.conf /etc/supervisor/
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["haproxy"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+
