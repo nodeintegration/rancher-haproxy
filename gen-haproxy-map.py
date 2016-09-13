@@ -22,20 +22,28 @@ def main(args):
 
 def get_containers(apiurl):
   url = '{}/{}'.format(apiurl,'containers')
-  r = requests.get(url, headers = {"Content-Type": "application/json", "Accept": "application/json"})
-  if r.status_code == requests.codes.ok:
-    return r.json()
-  else:
-    print "[ERROR]: status_code: {} getting containers".format(r.status_code)
+  try:
+    r = requests.get(url, headers = {"Content-Type": "application/json", "Accept": "application/json"})
+    if r.status_code == requests.codes.ok:
+      return r.json()
+    else:
+      print "[ERROR]: status_code: {} getting containers".format(r.status_code)
+      return None
+  except as e:
+    print "[ERROR]: get_containers failed with exception: {}".format(e)
     return None
 
 def get_aliases(apiurl):
   url = '{}/{}'.format(apiurl,'self/service/metadata/aliases')
-  r = requests.get(url, headers = {"Content-Type": "application/json", "Accept": "application/json"})
-  if r.status_code == 200 or r.status_code == 404:
-    return r.json()
-  else:
-    print "[ERROR]: status_code: {} getting aliases".format(r.status_code)
+  try:
+    r = requests.get(url, headers = {"Content-Type": "application/json", "Accept": "application/json"})
+    if r.status_code == 200 or r.status_code == 404:
+      return r.json()
+    else:
+      print "[ERROR]: status_code: {} getting aliases".format(r.status_code)
+      return None
+  except as e:
+    print "[ERROR]: get_aliases failed with exception: {}".format(e)
     return None
 
 def hashfile(afile, hasher, blocksize=65536):
