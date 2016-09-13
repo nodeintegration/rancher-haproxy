@@ -29,7 +29,7 @@ def get_containers(apiurl):
     else:
       print "[ERROR]: status_code: {} getting containers".format(r.status_code)
       return None
-  except as e:
+  except requests.exceptions.RequestException as e: 
     print "[ERROR]: get_containers failed with exception: {}".format(e)
     return None
 
@@ -42,7 +42,7 @@ def get_aliases(apiurl):
     else:
       print "[ERROR]: status_code: {} getting aliases".format(r.status_code)
       return None
-  except as e:
+  except requests.exceptions.RequestException as e: 
     print "[ERROR]: get_aliases failed with exception: {}".format(e)
     return None
 
