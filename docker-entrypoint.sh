@@ -1,15 +1,17 @@
 #!/bin/sh
 
-if [ "$1" == 'haproxy' ]; then
+if [ "$1" == '/usr/bin/supervisord' ]; then
   if [ "${STACK_DOMAIN}" == "none" ]; then
       echo "[ERROR]: STACK_DOMAIN MUST be defined..."
       exit 1
   fi
 
-
   # Configure haproxy logging
   if [ -z "${SYSLOG_HOST}" ]; then
       export SYSLOG_HOST=$(curl -sS "http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/host/agent_ip")
+      if [ -z "${SYSLOG_HOST}" ]; then
+        export SYSLOG_HOST="localhost"
+      fi
   fi
   if [ -z "${SYSLOG_FACILITY}" ]; then
       export SYSLOG_FACILITY='daemon'
@@ -56,6 +58,10 @@ if [ "$1" == 'haproxy' ]; then
     sed -i -e "s/#STATS_PASSWORD#/${STATS_PASSWORD}/g" $HAPROXY_CONFIG
   fi
 
+  # Setup supervisord contents
+  sed -i -e "s/#RANCHER_LABEL#/${RANCHER_LABEL}/g" /etc/supervisor/supervisord.conf
+  sed -i -e "s/#STACK_DOMAIN#/${STACK_DOMAIN}/g" /etc/supervisor/supervisord.conf
+
   # Make sure initial dynamic files exist.
   touch ${HAPROXY_DOMAIN_MAP}
   touch ${HAPROXY_BACKEND_CONFIG}
@@ -66,52 +72,12 @@ if [ "$1" == 'haproxy' ]; then
   HAPROXY_CONFIG_CHECK="haproxy -f ${HAPROXY_CONFIG} -f ${HAPROXY_BACKEND_CONFIG} -c"
   
   # Start the metadata service config generator
-  if [ "${DISABLE_METADATA}" == "false" ]; then
-    echo "[INFO]: starting rancher metadata service config generator"
-    python /gen-haproxy-map.py --apihost "${RANCHER_API_HOST}" --apiversion "${RANCHER_API_VERSION}" --label "${RANCHER_LABEL}" --domain "${STACK_DOMAIN}" --domainmap "${HAPROXY_DOMAIN_MAP}" --backends "${HAPROXY_BACKEND_CONFIG}" &
-
-    # Give it a few seconds to generate the host otherwise it will respin and try again
-    sleep 5
-  fi
 
   echo "[DEBUG]: ${HAPROXY_BACKEND_CONFIG} contents:"
   cat ${HAPROXY_BACKEND_CONFIG}
   # Check the config
   ${HAPROXY_CONFIG_CHECK}
-  # Start haproxy
-  ${HAPROXY_CMD}
-  
-  if [ $? == 0 ]; then
-    echo "[INFO]: haproxy started with ${HAPROXY_CONFIG} and ${HAPROXY_BACKEND_CONFIG}"
-  else
-    echo "[ERROR]: haproxy failed to start"
-    echo "[ERROR]: ${HAPROXY_DOMAIN_MAP} contents:"
-    cat ${HAPROXY_DOMAIN_MAP}
-    echo "[ERROR]: ${HAPROXY_BACKEND_CONFIG} contents:"
-    cat ${HAPROXY_BACKEND_CONFIG}
-    exit 1
-  fi
-  
-  while inotifywait -q -e create,delete,modify,attrib ${HAPROXY_CONFIG} ${HAPROXY_BACKEND_CONFIG}; do
-    if [ -f ${HAPROXY_PID_FILE} ]; then
-      echo "[INFO]: restarting haproxy from config changes..."
-      ${HAPROXY_CONFIG_CHECK}
-      # Since we want haproxy to continue but we want to know the current config not just the failing line
-      if [ $? != 0 ]; then
-        echo "[ERROR]: haproxy config test failed:"
-    	echo "[ERROR]: ${HAPROXY_DOMAIN_MAP} contents:"
-    	cat ${HAPROXY_DOMAIN_MAP}
-    	echo "[ERROR]: ${HAPROXY_BACKEND_CONFIG} contents:"
-    	cat ${HAPROXY_BACKEND_CONFIG}
-      else
-        ${HAPROXY_CMD} -sf $(cat ${HAPROXY_PID_FILE})
-        echo "[INFO] haproxy restarted new pid: $(cat ${HAPROXY_PID_FILE})"
-      fi
-    else
-      echo "[ERROR] haproxy pid not found exiting"
-      break
-    fi
-  done
+  exec "$@"
 else
   exec "$@"
 fi
