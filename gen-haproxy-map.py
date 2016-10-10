@@ -116,7 +116,7 @@ def generate_config(label, proxylabel, containers, aliases):
 
       # If the container has a proxyprotocol label defined add it
       if unicode(proxylabel) in container[u'labels']:
-        backends[stack_name][service_id]['proxy_protocol'] = container[u'labels'][unicode(proxy_label)]
+        backends[stack_name][service_id]['proxy_protocol'] = container[u'labels'][unicode(proxylabel)]
 
 
   return (backends, domainmaps)
