@@ -23,7 +23,8 @@ The label to associate and the domain are configurable
 * HAPROXY_DOMAIN_MAP - Where the dynamic domain map generated config is stored
 * RANCHER_API_HOST - The rancher metadata service api host
 * RANCHER_API_VERSION - The rancher api version to use
-* RANCHER_LABEL - The label for to filter by for services to include in the routing
+* RANCHER_LABEL - The label to filter by for services to include in the routing
+* RANCHER_PROXY_LABEL - The label to filter by for services that want proxy protocol routing
 * DISABLE_METADATA - This disables the fetching of data from metadata, more for debug use if you want to run it locally outside of rancher for testing
 
 ### Examples
