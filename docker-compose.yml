@@ -8,12 +8,18 @@ HTTP-generate-maps:
   - generate-maps
   image: nodeintegration/rancher-haproxy
   stdin_open: true
+  volumes:
+  - /usr/local/etc/haproxy
 HTTP:
   ports:
-  - 8001:80/tcp
+  - 80:80/tcp
+  - 443:443/tcp
   labels:
     io.rancher.sidekicks: HTTP-generate-maps
     io.rancher.container.pull_image: always
   tty: true
   image: nodeintegration/rancher-haproxy
   stdin_open: true
+  volumes_from:
+    - HTTP-generate-maps
+
