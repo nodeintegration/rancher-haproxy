@@ -107,7 +107,14 @@ elif [ "$1" = "generate-maps" ]; then
   # Start the metadata service config generator
   if [ "${DISABLE_METADATA}" == "false" ]; then
     echo "[INFO]: starting rancher metadata service config generator"
-    python /gen-haproxy-map.py --apihost "${RANCHER_API_HOST}" --apiversion "${RANCHER_API_VERSION}" --label "${RANCHER_LABEL}" --domain "${STACK_DOMAIN}" --domainmap "${HAPROXY_DOMAIN_MAP}" --backends "${HAPROXY_BACKEND_CONFIG}"
+    python /gen-haproxy-map.py \
+      --apihost "${RANCHER_API_HOST}" \
+      --apiversion "${RANCHER_API_VERSION}" \
+      --label "${RANCHER_LABEL}" \
+      --proxylabel "${RANCHER_PROXY_LABEL}" \
+      --domain "${STACK_DOMAIN}" \
+      --domainmap "${HAPROXY_DOMAIN_MAP}" \
+      --backends "${HAPROXY_BACKEND_CONFIG}"
   else
     echo "[ERROR]: DISABLE_METADATA: ${DISABLE_METADATA} This is an error unless your debugging without rancher..."
     exit 1

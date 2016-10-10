@@ -60,6 +60,7 @@ ENV HAPROXY_DOMAIN_MAP /usr/local/etc/haproxy/domain.map
 ENV RANCHER_API_HOST rancher-metadata.rancher.internal
 ENV RANCHER_API_VERSION 2015-12-19
 ENV RANCHER_LABEL map-public-http
+ENV RANCHER_PROXY_LABEL send-proxy
 
 COPY gen-haproxy-map.py /
 COPY docker-entrypoint.sh /

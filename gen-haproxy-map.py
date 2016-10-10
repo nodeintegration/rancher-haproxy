@@ -14,7 +14,7 @@ def main(args):
     containers = get_containers(apiurl)
     aliases = get_aliases(apiurl)
     if containers:
-      (backends, domainmaps) = generate_config(args.label, containers, aliases)
+      (backends, domainmaps) = generate_config(args.label, args.proxylabel, containers, aliases)
       update_config('backends', backends, args.backends)
       update_config('domainmaps', domainmaps, args.domainmap)
 
@@ -69,7 +69,10 @@ def update_config(config_type, data, output_file):
       for backend in sorted(data):
         f.write('\nbackend {}\n  mode http\n'.format(backend))
         for uuid in sorted(data[backend]):
-          f.write('  server {} {}:{}\n'.format(uuid, data[backend][uuid]['ip'], data[backend][uuid]['port']))
+          if 'proxy_protocol' in data[backend][uuid]:
+            f.write('  server {} {}:{} {}\n'.format(uuid, data[backend][uuid]['ip'], data[backend][uuid]['port'], data[backend][uuid]['proxy_protocol']))
+          else:
+            f.write('  server {} {}:{}\n'.format(uuid, data[backend][uuid]['ip'], data[backend][uuid]['port']))
     elif config_type == 'domainmaps':
       for domain in sorted(data):
         f.write('{} {}\n'.format(domain, data[domain]))
@@ -81,11 +84,14 @@ def update_config(config_type, data, output_file):
   else:
     os.rename(tmpfile, output_file)
 
-def generate_config(label, containers, aliases):
+def generate_config(label, proxylabel, containers, aliases):
   backends   = {}
   domainmaps = {}
   for container in containers:
     if unicode(label) in container[u'labels']:
+      proxy_protocol = None
+      if unicode(proxylabel) in container[u'labels']:
+        proxy_protocol = container[u'labels'][unicode(proxy_label)]
       stack_name   = container[u'stack_name']
       service_name = container[u'service_name']
       primary_ip   = container[u'primary_ip']
@@ -107,9 +113,9 @@ def generate_config(label, containers, aliases):
           fqdn = '{}.{}'.format(alias, args.domain)
           domainmaps[fqdn] = stack_name
       try:
-        backends[stack_name][service_id] = {'ip': primary_ip, 'port': port }
+        backends[stack_name][service_id] = {'ip': primary_ip, 'port': port, 'proxy_protocol': proxy_protocol }
       except KeyError:
-        backends[stack_name] = { service_id: { 'ip': primary_ip, 'port': port } }
+        backends[stack_name] = { service_id: { 'ip': primary_ip, 'port': port, 'proxy_protocol': proxy_protocol } }
 
   return (backends, domainmaps)
 
@@ -121,6 +127,7 @@ if __name__ == "__main__":
   parser.add_argument('--domainmap',  required=True,        help='Where to store the haproxy map file.')
   parser.add_argument('--backends',   required=True,        help='Where to store the haproxy backends file.')
   parser.add_argument('--label',      required=True,        help='What rancher label to use to find containers.')
+  parser.add_argument('--proxylabel', required=True,        help='What rancher label to use for containers that want proxy protocol connections.')
   parser.add_argument('--interval',   default=10, type=int, help='How often to generate the config.')
   args = parser.parse_args()
 
