@@ -116,3 +116,15 @@ Since this is image is essentially a normal container we dont have this luxury. 
 # TODO
 * in short plenty
 * add support for http -> https redirection
+
+# Changelog
+All noteable changes from version: 0.5 will be documented here
+
+## [0.6] - 2016-10-10
+### Changed
+- Created example docker-compose.yml and rancher-compose.yml
+- Moved python map generation script to a sidekick, this is important because:
+  The motiviation for this is because we need to control multiple processes (haproxy and a python script) that if the python script dies for any reason it does not know how to restart the pythong process.
+  Something like supervisord to accomplish multiple process monitoring wont work as you cannot get haproxy to reloads in a traditional fashion
+- reshuffled docker-entrypoint.sh to handle multiple command invocations
+

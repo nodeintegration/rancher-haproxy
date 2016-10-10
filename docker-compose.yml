@@ -1,0 +1,19 @@
+HTTP-generate-maps:
+  environment:
+    STACK_DOMAIN: MYDOMAIN.tld
+  labels:
+    io.rancher.container.pull_image: always
+  tty: true
+  command:
+  - generate-maps
+  image: nodeintegration/rancher-haproxy
+  stdin_open: true
+HTTP:
+  ports:
+  - 8001:80/tcp
+  labels:
+    io.rancher.sidekicks: HTTP-generate-maps
+    io.rancher.container.pull_image: always
+  tty: true
+  image: nodeintegration/rancher-haproxy
+  stdin_open: true

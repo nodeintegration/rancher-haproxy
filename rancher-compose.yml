@@ -1,0 +1,6 @@
+HTTP:
+  metadata:
+    ssl_cert: |
+      XXX
+    ssl_key: |
+      XXX

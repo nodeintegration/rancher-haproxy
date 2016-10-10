@@ -1,18 +1,12 @@
 #!/bin/sh
 
-if [ "$1" == 'haproxy' ]; then
-  if [ "${STACK_DOMAIN}" == "none" ]; then
-      echo "[ERROR]: STACK_DOMAIN MUST be defined..."
-      exit 1
-  fi
-
-
+if [ "$1" = "haproxy" ]; then
   # Configure haproxy logging
   if [ -z "${SYSLOG_HOST}" ]; then
-      export SYSLOG_HOST=$(curl -sS "http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/host/agent_ip")
+    export SYSLOG_HOST=$(curl -sS "http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/host/agent_ip")
   fi
   if [ -z "${SYSLOG_FACILITY}" ]; then
-      export SYSLOG_FACILITY='daemon'
+    export SYSLOG_FACILITY='daemon'
   fi
   echo "[INFO]: setting SYSLOG_HOST to: ${SYSLOG_HOST}"
   echo "[INFO]: setting SYSLOG_FACILITY to: ${SYSLOG_FACILITY}"
@@ -65,15 +59,6 @@ if [ "$1" == 'haproxy' ]; then
   HAPROXY_CMD="haproxy -f ${HAPROXY_CONFIG} -f ${HAPROXY_BACKEND_CONFIG} -D -p ${HAPROXY_PID_FILE}"
   HAPROXY_CONFIG_CHECK="haproxy -f ${HAPROXY_CONFIG} -f ${HAPROXY_BACKEND_CONFIG} -c"
   
-  # Start the metadata service config generator
-  if [ "${DISABLE_METADATA}" == "false" ]; then
-    echo "[INFO]: starting rancher metadata service config generator"
-    python /gen-haproxy-map.py --apihost "${RANCHER_API_HOST}" --apiversion "${RANCHER_API_VERSION}" --label "${RANCHER_LABEL}" --domain "${STACK_DOMAIN}" --domainmap "${HAPROXY_DOMAIN_MAP}" --backends "${HAPROXY_BACKEND_CONFIG}" &
-
-    # Give it a few seconds to generate the host otherwise it will respin and try again
-    sleep 5
-  fi
-
   echo "[DEBUG]: ${HAPROXY_BACKEND_CONFIG} contents:"
   cat ${HAPROXY_BACKEND_CONFIG}
   # Check the config
@@ -112,6 +97,21 @@ if [ "$1" == 'haproxy' ]; then
       break
     fi
   done
+
+elif [ "$1" = "generate-maps" ]; then
+  if [ "${STACK_DOMAIN}" == "none" ]; then
+    echo "[ERROR]: STACK_DOMAIN MUST be defined..."
+    exit 1
+  fi
+
+  # Start the metadata service config generator
+  if [ "${DISABLE_METADATA}" == "false" ]; then
+    echo "[INFO]: starting rancher metadata service config generator"
+    python /gen-haproxy-map.py --apihost "${RANCHER_API_HOST}" --apiversion "${RANCHER_API_VERSION}" --label "${RANCHER_LABEL}" --domain "${STACK_DOMAIN}" --domainmap "${HAPROXY_DOMAIN_MAP}" --backends "${HAPROXY_BACKEND_CONFIG}"
+  else
+    echo "[ERROR]: DISABLE_METADATA: ${DISABLE_METADATA} This is an error unless your debugging without rancher..."
+    exit 1
+  fi
 else
   exec "$@"
 fi
