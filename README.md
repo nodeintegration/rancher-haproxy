@@ -124,6 +124,7 @@ Since this is image is essentially a normal container we dont have this luxury. 
 # TODO
 * in short plenty
 * add support for http -> https redirection
+* add proxy protocol support
 
 # Changelog
 All noteable changes from version: 0.5 will be documented here
