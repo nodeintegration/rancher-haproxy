@@ -30,27 +30,35 @@ The label to associate and the domain are configurable
 Create a stack for your load balancer
 docker-compose.yml:
 ```
+HTTP-generate-maps:
+  environment:
+    STACK_DOMAIN: MYDOMAIN.tld
+  labels:
+    io.rancher.container.pull_image: always
+  tty: true
+  command:
+  - generate-maps
+  image: nodeintegration/rancher-haproxy
+  stdin_open: true
 HTTP:
   ports:
-  - 443:443/tcp
   - 80:80/tcp
-  environment:
-    STACK_DOMAIN: '$MyDomainWithWildcardRecord'
-    RANCHER_LABEL: 'IWantMyContainersThatHaveThisLabelToBeDiscovered'
+  - 443:443/tcp
   labels:
+    io.rancher.sidekicks: HTTP-generate-maps
     io.rancher.container.pull_image: always
   tty: true
   image: nodeintegration/rancher-haproxy
   stdin_open: true
 ```
-Then create your web applications with the same label you used above ie "RANCHER_LABEL".
+Then create your web applications with the same label you used for "RANCHER_LABEL" above or the default (map-public-http) and the port that the container listens to http on.
 e.g. a stack called "test-webservice-r123"
 docker-compose.yml:
 ```
 nginx:
   labels:
     io.rancher.container.pull_image: always
-    IWantMyContainersThatHaveThisLabelToBeDiscovered: '80'
+    map-public-http: 80
   tty: true
   image: nginx:stable-alpine
   stdin_open: true
