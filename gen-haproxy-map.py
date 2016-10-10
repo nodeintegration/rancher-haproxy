@@ -89,9 +89,6 @@ def generate_config(label, proxylabel, containers, aliases):
   domainmaps = {}
   for container in containers:
     if unicode(label) in container[u'labels']:
-      proxy_protocol = None
-      if unicode(proxylabel) in container[u'labels']:
-        proxy_protocol = container[u'labels'][unicode(proxy_label)]
       stack_name   = container[u'stack_name']
       service_name = container[u'service_name']
       primary_ip   = container[u'primary_ip']
@@ -113,9 +110,14 @@ def generate_config(label, proxylabel, containers, aliases):
           fqdn = '{}.{}'.format(alias, args.domain)
           domainmaps[fqdn] = stack_name
       try:
-        backends[stack_name][service_id] = {'ip': primary_ip, 'port': port, 'proxy_protocol': proxy_protocol }
+        backends[stack_name][service_id] = {'ip': primary_ip, 'port': port }
       except KeyError:
-        backends[stack_name] = { service_id: { 'ip': primary_ip, 'port': port, 'proxy_protocol': proxy_protocol } }
+        backends[stack_name] = { service_id: { 'ip': primary_ip, 'port': port } }
+
+      # If the container has a proxyprotocol label defined add it
+      if unicode(proxylabel) in container[u'labels']:
+        backends[stack_name][service_id]['proxy_protocol'] = container[u'labels'][unicode(proxy_label)]
+
 
   return (backends, domainmaps)
 
