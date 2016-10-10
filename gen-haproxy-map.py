@@ -132,5 +132,4 @@ if __name__ == "__main__":
   parser.add_argument('--proxylabel', required=True,        help='What rancher label to use for containers that want proxy protocol connections.')
   parser.add_argument('--interval',   default=10, type=int, help='How often to generate the config.')
   args = parser.parse_args()
-
   main(args)
