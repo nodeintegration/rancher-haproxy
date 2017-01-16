@@ -1,25 +1,26 @@
 HTTP-generate-maps:
   environment:
-    STACK_DOMAIN: MYDOMAIN.tld
-  labels:
-    io.rancher.container.pull_image: always
+    STACK_DOMAIN: ${STACK_DOMAIN}
   tty: true
   command:
   - generate-maps
   image: nodeintegration/rancher-haproxy
-  stdin_open: true
   volumes:
   - /usr/local/etc/haproxy
-HTTP:
+  stdin_open: true
+
+HTTP-public:
   ports:
+  - 1936:1936/tcp
   - 80:80/tcp
   - 443:443/tcp
+  environment:
+    ENABLE_STATS: 'true'
+    STATS_PORT: '1936'
   labels:
-    io.rancher.sidekicks: HTTP-generate-maps
-    io.rancher.container.pull_image: always
+    io.rancher.sidekicks: HTTP-public-generate-maps
   tty: true
   image: nodeintegration/rancher-haproxy
-  stdin_open: true
   volumes_from:
-    - HTTP-generate-maps
-
+  - HTTP-public-generate-maps
+  stdin_open: true
