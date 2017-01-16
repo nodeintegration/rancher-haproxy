@@ -41,6 +41,8 @@ HTTP-generate-maps:
   - generate-maps
   image: nodeintegration/rancher-haproxy
   stdin_open: true
+  volumes:
+  - /usr/local/etc/haproxy
 HTTP:
   ports:
   - 80:80/tcp
@@ -51,6 +53,8 @@ HTTP:
   tty: true
   image: nodeintegration/rancher-haproxy
   stdin_open: true
+  volumes_from:
+    - HTTP-generate-maps
 ```
 Then create your web applications with the same label you used for "RANCHER_LABEL" above or the default (map-public-http) and the port that the container listens to http on.
 e.g. a stack called "test-webservice-r123"
