@@ -69,6 +69,26 @@ nginx:
   stdin_open: true
 ```
 The value of the label is the port that haproxy will balance to
+
+### Proxy protocol support for backend services
+Lets say i want certain backends to support proxy_protocol:
+In my backend service:
+```
+nginx:
+  labels:
+    io.rancher.container.pull_image: always
+    map-public-http: 80
+    proxy_protocol: send-proxy <==== This is the value of what the server protocol should be
+  tty: true
+  image: nginx:stable-alpine
+  stdin_open: true
+```
+
+In my rancher-haproxy stack you'll want to add the envionment variable:
+```
+RANCHER_PROXY_LABEL: proxy_protocol <==== This tells the generate script what label to look for to set the value of the server protocol
+
+```
 ### What options do i have for ssl certificates?
 
 Add the environment flag: ENABLE_SSL: 'true'
@@ -129,7 +149,6 @@ Since this is image is essentially a normal container we dont have this luxury. 
 # TODO
 * in short plenty
 * add support for http -> https redirection
-* add proxy protocol support
 
 # Changelog
 All noteable changes from version: 0.5 will be documented here
