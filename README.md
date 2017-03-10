@@ -12,6 +12,8 @@ The label to associate and the domain are configurable
 ### ENVIRONMENT Flags
 * STACK_DOMAIN - The domain to append to the stack names ie. if your stack was: stack123 and the STACK_DOMAIN was 'dev.tld' you would be able to access the stack via: stack123.dev.tld
 * ENABLE_SSL - Enables ssl offloading, only set this to true if you have your ssl cert/key configured as per below
+* ENABLE_SSL_REDIRECTION - Redirect all HTTP requests to HTTPS
+* SSL_REDIRECTION_TYPE - The redirect type to use, defaults to 301
 * SSL_BASE64_ENCODED - When supplying certificate/key in metadata, this flag will assume you have base64 encoded them, this is handy if you want to use compose variables for certificates
 * ENABLE_STATS - Tells haproxy to expose the stats http interface, listens on STATS_PORT with STATS_USERNAME and STATS_PASSWORD, defaults to false
 * STATS_PORT - Tells haproxy what port to use for stats, defaults to 1936
