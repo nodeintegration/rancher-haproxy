@@ -43,7 +43,7 @@ if [ "$1" = "haproxy" ]; then
     if [ "${ENABLE_SSL_REDIRECTION}" != 'false' ]; then
       echo "[INFO]: enabling ssl redirection to ${SSL_REDIRECTION_TYPE}"
       sed -i -e "s/#ENABLE_SSL_REDIRECTION#//g" $HAPROXY_CONFIG
-      sed -i -e "s/#SSL_REDIRECTION_TYPE#//g" $HAPROXY_CONFIG
+      sed -i -e "s/#SSL_REDIRECTION_TYPE#/${SSL_REDIRECTION_TYPE}/g" $HAPROXY_CONFIG
     fi
 
   fi
