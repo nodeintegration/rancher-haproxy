@@ -15,6 +15,8 @@ The label to associate and the domain are configurable
 * ENABLE_SSL_REDIRECTION - Redirect all HTTP requests to HTTPS
 * SSL_REDIRECTION_TYPE - The redirect type to use, defaults to 301
 * SSL_BASE64_ENCODED - When supplying certificate/key in metadata, this flag will assume you have base64 encoded them, this is handy if you want to use compose variables for certificates
+* SSL_CERT_ENC - Setting the certificate, should be base64 encoded `cat somecert.crt | base64 -o somecert.crt.base64`
+* SSL_KEY_ENC - Setting the certificate key, should be base64 encoded `cat somecert.key | base64 -o somecert.key.base64`
 * ENABLE_STATS - Tells haproxy to expose the stats http interface, listens on STATS_PORT with STATS_USERNAME and STATS_PASSWORD, defaults to false
 * STATS_PORT - Tells haproxy what port to use for stats, defaults to 1936
 * STATS_USERNAME - haproxy stats username, defaults to haproxy
@@ -99,8 +101,9 @@ Theres a few ways to supply your certificate and key:
 * mount a combined cert and key to $HAPROXY_SSL_CERT
 * supply the cert and key through metadata
 * supply the cert and key through metadata base64 encoded
+* supply the cert and key as ENVIRONMENT var `SSL_CERT_ENC` & `SSL_KEY_ENC`. Decode base64 first!
 
-rancher-compose.yml: 
+rancher-compose.yml:
 You can use a raw certificate multiline string or you can just base64 encode the cert to a single line string to easily preserve formatting:
 cat somecert.crt | base64 -w 0 > somecert.crt.base64
 ```
@@ -109,7 +112,7 @@ HTTP:
     ssl_cert: |
       -----BEGIN CERTIFICATE-----
       XXX
-    ssl_key: | 
+    ssl_key: |
       -----BEGIN RSA PRIVATE KEY-----
       XXX
 ```
@@ -162,4 +165,3 @@ All noteable changes from version: 0.5 will be documented here
   The motiviation for this is because we need to control multiple processes (haproxy and a python script) that if the python script dies for any reason it does not know how to restart the pythong process.
   Something like supervisord to accomplish multiple process monitoring wont work as you cannot get haproxy to reloads in a traditional fashion
 - reshuffled docker-entrypoint.sh to handle multiple command invocations
-
