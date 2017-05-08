@@ -19,6 +19,10 @@ if [ "$1" = "haproxy" ]; then
 
     if [ -f ${HAPROXY_SSL_CERT} ]; then
       echo "[INFO]: certificate: ${HAPROXY_SSL_CERT} already exists, skip fetching."
+    elif [[ -n ${SSL_CERT_ENC} ]]; then
+      echo "[INFO]: Copy env cert to file (they should be base64 encoded!)"
+      echo ${SSL_CERT_ENC} | base64 -d > ${HAPROXY_SSL_CERT}
+      echo ${SSL_KEY_ENC} | base64 -d >> ${HAPROXY_SSL_CERT}
     else
       if [ "${SSL_BASE64_ENCODED}" != 'false' ]; then
         echo "[INFO]: getting base64 encoded ssl certificate from metadata http://${RANCHER_API_HOST}/${RANCHER_API_VERSION}/self/service/metadata/ssl_cert"
@@ -64,19 +68,19 @@ if [ "$1" = "haproxy" ]; then
   # Make sure initial dynamic files exist.
   touch ${HAPROXY_DOMAIN_MAP}
   touch ${HAPROXY_BACKEND_CONFIG}
-  
+
   # Internal params
   HAPROXY_PID_FILE="/var/run/haproxy.pid"
   HAPROXY_CMD="haproxy -f ${HAPROXY_CONFIG} -f ${HAPROXY_BACKEND_CONFIG} -D -p ${HAPROXY_PID_FILE}"
   HAPROXY_CONFIG_CHECK="haproxy -f ${HAPROXY_CONFIG} -f ${HAPROXY_BACKEND_CONFIG} -c"
-  
+
   echo "[DEBUG]: ${HAPROXY_BACKEND_CONFIG} contents:"
   cat ${HAPROXY_BACKEND_CONFIG}
   # Check the config
   ${HAPROXY_CONFIG_CHECK}
   # Start haproxy
   ${HAPROXY_CMD}
-  
+
   if [ $? == 0 ]; then
     echo "[INFO]: haproxy started with ${HAPROXY_CONFIG} and ${HAPROXY_BACKEND_CONFIG}"
   else
@@ -87,7 +91,7 @@ if [ "$1" = "haproxy" ]; then
     cat ${HAPROXY_BACKEND_CONFIG}
     exit 1
   fi
-  
+
   while inotifywait -q -e create,delete,modify,attrib ${HAPROXY_CONFIG} ${HAPROXY_BACKEND_CONFIG}; do
     if [ -f ${HAPROXY_PID_FILE} ]; then
       echo "[INFO]: restarting haproxy from config changes..."
